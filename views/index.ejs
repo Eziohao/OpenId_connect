@@ -1,11 +1,22 @@
 <!DOCTYPE html>
 <html>
-  <head>
+  <head ng-app="OpenId">
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css"> <!-- load bootstrap css -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"> <!-- load fontawesome -->
+    <script src="/lib/angular.js"></script>
+    <script src="/javascripts/OpenIdControl.js"></script>
   </head>
-  <body>
+  <body ng-controller="OpenIdControl">
+  	<div class="container">
     <h1><%= title %></h1>
     <p>Welcome to <%= title %></p>
+   <form ng-submit='FBlogin()' >
+	Email: <input type="text" name="email" ng-model='email' class="form-control" id='email'><br />
+	Password:<input type="password" name="password" ng-model='pass' class="form-control" id='password'><br />
+	<input type="submit" value="login" class="btn btn-warning btn-lg">
+   </form>
+   </div>
   </body>
 </html>

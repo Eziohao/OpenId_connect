@@ -12,6 +12,21 @@
     "ejs": "~2.3.2",
     "express": "~4.13.0",
     "morgan": "~1.6.1",
-    "serve-favicon": "~2.3.0"
+    "serve-favicon": "~2.3.0",
+    "http-accept": "^0.1.6",
+    "http-proxy": "1.13.2",
+    "jszip": "^3.0.0",
+    "mime-types": "^2.1.11",
+    "multer": "^1.1.0",
+    "promise": "^7.1.1",
+    "tar": "^2.2.1",
+    "unzip": "^0.1.11",
+    "winston": "2.2.0",
+     "concat-stream": "^1.5.1",
+    "domain-name-parser": "^2.3.0",
+     "basho-riak-client": "^2.1.2",
+     "passport":"*",
+     "passport-facebook":"*",
+     "passport-local":"*"
   }
 }

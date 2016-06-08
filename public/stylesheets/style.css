@@ -6,3 +6,9 @@ body {
 a {
   color: #00B7FF;
 }
+#email{
+	wildth:'100px';
+}
+#password{
+	wildth:'100px';
+}
