@@ -4,7 +4,23 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var passport = require('passport');
+var FacebookStrategy = require('passport-facebook').Strategy;
+ passport.use(new FacebookStrategy({
+        clientID:'1186130451420038',
+        clientSecret:'45adcb738d93ec590fd3e78c41261b92',
+        callbackURL:'http://localhost:3000/auth/facebook/callback'
+      },
+      function(accesstoken,refreshToken,profile,cb){
+       return cb(null, profile);
+      }))
+ passport.serializeUser(function(user, cb) {
+  cb(null, user);
+});
 
+passport.deserializeUser(function(obj, cb) {
+  cb(null, obj);
+});
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
@@ -21,9 +37,16 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true }));
+
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use('/', routes);
 app.use('/facebook_login',routes);
+app.use('/auth/facebook/callback',routes);
+app.use('/profile',routes);
 app.use('/users', users);
 
 // catch 404 and forward to error handler

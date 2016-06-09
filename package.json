@@ -27,6 +27,7 @@
      "basho-riak-client": "^2.1.2",
      "passport":"*",
      "passport-facebook":"*",
-     "passport-local":"*"
+     "passport-local":"*",
+     "express-session":"*"
   }
 }
