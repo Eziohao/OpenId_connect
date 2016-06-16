@@ -12,6 +12,7 @@ var FacebookStrategy = require('passport-facebook').Strategy;
         callbackURL:'http://localhost:3000/auth/facebook/callback'
       },
       function(accesstoken,refreshToken,profile,cb){
+        console.log(accesstoken);
        return cb(null, profile);
       }))
  passport.serializeUser(function(user, cb) {
