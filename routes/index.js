@@ -42,21 +42,21 @@ var jwtRequest = {
         "Accept": 'application/vnd.com.covisint.platform.nonce.response.v1+json',
         "x-requestor-app": 'facebook_login',
         "realmId": 'S-SCLLOGIN-SCL1',
-        "Content-Length":""
-        
+        "Content-Length": ""
+
     }
 }
-var getUsers={
-	host:'apistg.np.covapp.io',
-	path:'/person/v3/persons/IJJF7CC1',
-	port:443,
-	method:"GET",
-	headers:{
-		"Content-Type":"application/vnd.com.covisint.platform.person.v1+json",
-		"Accept":"application/vnd.com.covisint.platform.person.v1+json",
-		"solutionInstanceId":"2b442c1f-34d2-4256-9d5f-2a049294450f",
-		"XSRFToken":""
-	}
+var getUsers = {
+    host: 'apistg.np.covapp.io',
+    path: '/person/v3/persons/IJJF7CC1',
+    port: 443,
+    method: "GET",
+    headers: {
+        "Content-Type": "application/vnd.com.covisint.platform.person.v1+json",
+        "Accept": "application/vnd.com.covisint.platform.person.v1+json",
+        "solutionInstanceId": "2b442c1f-34d2-4256-9d5f-2a049294450f",
+        "XSRFToken": ""
+    }
 }
 
 
@@ -74,7 +74,7 @@ router.get('/auth/facebook/callback',
         res.redirect('/profile');
     });
 router.get('/profile', //jumping to profile page
-    function(req, res) {
+    function(req, res,next) {
         var post_req_nonce = https.request(nonceRequest, function(res) { //post for getting nonce
             console.log('send request');
             var buffer = "";
@@ -84,38 +84,38 @@ router.get('/profile', //jumping to profile page
 
             });
             res.on("end", function() {
-         
+
                 buffer = JSON.parse(buffer);
                 postDatajwt.nonce = buffer.nonce;
-                jwtRequest["headers"]["Content-Length"]=Buffer.byteLength(JSON.stringify(postDatajwt))
-                
-                var post_req_jwt = https.request(jwtRequest, function(res,err) {     //post nonce for getting XSRFtoken
-                     var jwtToken = "";
-                    if(err){
-                    	return err;
+                jwtRequest["headers"]["Content-Length"] = Buffer.byteLength(JSON.stringify(postDatajwt))
+
+                var post_req_jwt = https.request(jwtRequest, function(res, err) { //post nonce for getting XSRFtoken
+                    var jwtToken = "";
+                    if (err) {
+                        return err;
                     }
                     console.log(jwtRequest.headers);
                     res.setEncoding("utf-8");
                     res.on("data", function(data) {
-                        jwtToken += data;	
+                        jwtToken += data;
                     });
                     res.on("end", function() {
                         console.log(jwtToken);
-                        jwtToken=JSON.parse(jwtToken);
-                        getUsers["headers"]["XSRFToken"]=jwtToken.xsrfToken;
+                        jwtToken = JSON.parse(jwtToken);
+                        getUsers["headers"]["XSRFToken"] = jwtToken.xsrfToken;
                         console.log(getUsers);
-                        var get_usersRequest=https.request(getUsers,function(res){   //get users info
-                        	var users='';
-                        	res.setEncoding("utf-8");
-                        	res.on('data',function(data){
-                        		users+=data;
-                        	})
-                        	res.on("end",function(){
-                        		console.log(users);
-                        	})
+                        var get_usersRequest = https.request(getUsers, function(res) { //get users info
+                            var users = '';
+                            res.setEncoding("utf-8");
+                            res.on('data', function(data) {
+                                users += data;
+                            })
+                            res.on("end", function() {
+                                console.log(users);
+                            })
                         })
-                    
-                     get_usersRequest.end()
+
+                        get_usersRequest.end()
                     })
                 })
                 console.log("send nonce");
@@ -124,7 +124,7 @@ router.get('/profile', //jumping to profile page
                 post_req_jwt.end();
             });
         })
-
+       
         post_req_nonce.write(postDataNonce);
         post_req_nonce.end();
 

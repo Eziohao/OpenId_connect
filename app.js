@@ -37,6 +37,21 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+app.use('/profile',function(req,res,next){
+  var cookies=req.cookies;
+ 
+  if(cookies){
+    console.log('cookie exists',cookies);
+    
+    res.cookie(cookies);
+  }
+  else{
+    console.log('cookie does not exists');
+  }
+   next();
+})
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true }));
 
