@@ -9,7 +9,7 @@ var postDataNonce = JSON.stringify({ //set request nonce data
     "realm": "S-SCLLOGIN-SCL1"
 })
 
-var jwtToken;
+
 var nonceRequest = { //set request headers
     host: "authn-4-stg.run.covisintrnd.com",
     path: "/authn/nonce",
@@ -25,26 +25,38 @@ var nonceRequest = { //set request headers
     }
 
 };
+var postDatajwt = {
+    "realm": "S-SCLLOGIN-SCL1",
+    "nonce": "",
+    "url": "localhost:3000/profile"
+}
 var jwtRequest = {
     host: 'apistg.np.covapp.io',
     path: '/authn/v4/sessionToken/nonce/validate',
     port: 443,
     method: "POST",
     headers: {
-        "ContentType": "application/vnd.com.covisint.platform.authn.nonce.v1+json",
+        "Content-Type": "application/vnd.com.covisint.platform.nonce.request.v1+json",
         "x-requestor": 'S-SCLLOGIN-SCL1_ADMIN',
         "x-realm": 'S-SCLLOGIN-SCL1',
         "Accept": 'application/vnd.com.covisint.platform.nonce.response.v1+json',
         "x-requestor-app": 'facebook_login',
         "realmId": 'S-SCLLOGIN-SCL1',
-        "Content-Length": Buffer.byteLength(postDatajwt)
+        "Content-Length":""
         
     }
 }
-var postDatajwt = {
-    "realm": "S-SCLLOGIN-SCL1",
-    "nonce": "",
-    "url": "localhost:3000/profile"
+var getUsers={
+	host:'apistg.np.covapp.io',
+	path:'/person/v3/persons/IJJF7CC1',
+	port:443,
+	method:"GET",
+	headers:{
+		"Content-Type":"application/vnd.com.covisint.platform.person.v1+json",
+		"Accept":"application/vnd.com.covisint.platform.person.v1+json",
+		"solutionInstanceId":"2b442c1f-34d2-4256-9d5f-2a049294450f",
+		"XSRFToken":""
+	}
 }
 
 
@@ -75,10 +87,13 @@ router.get('/profile', //jumping to profile page
          
                 buffer = JSON.parse(buffer);
                 postDatajwt.nonce = buffer.nonce;
-                jwtRequest["headers"]["Content-Length"]=Buffer.byteLength(postDatajwt)
+                jwtRequest["headers"]["Content-Length"]=Buffer.byteLength(JSON.stringify(postDatajwt))
                 
-                var post_req_jwt = https.request(jwtRequest, function(res) {
-                    jwtToken = "";
+                var post_req_jwt = https.request(jwtRequest, function(res,err) {     //post nonce for getting XSRFtoken
+                     var jwtToken = "";
+                    if(err){
+                    	return err;
+                    }
                     console.log(jwtRequest.headers);
                     res.setEncoding("utf-8");
                     res.on("data", function(data) {
@@ -86,6 +101,21 @@ router.get('/profile', //jumping to profile page
                     });
                     res.on("end", function() {
                         console.log(jwtToken);
+                        jwtToken=JSON.parse(jwtToken);
+                        getUsers["headers"]["XSRFToken"]=jwtToken.xsrfToken;
+                        console.log(getUsers);
+                        var get_usersRequest=https.request(getUsers,function(res){   //get users info
+                        	var users='';
+                        	res.setEncoding("utf-8");
+                        	res.on('data',function(data){
+                        		users+=data;
+                        	})
+                        	res.on("end",function(){
+                        		console.log(users);
+                        	})
+                        })
+                    
+                     get_usersRequest.end()
                     })
                 })
                 console.log("send nonce");
