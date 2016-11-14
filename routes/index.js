@@ -4,9 +4,9 @@ var passport = require('passport');
 var https = require('https');
 
 var postDataNonce = JSON.stringify({ //set request nonce data
-    'url': "http://localhost:3000",
-    "cuid": "S-SCLLOGIN-SCL1_ADMIN",
-    "realm": "S-SCLLOGIN-SCL1"
+    'url': " https://s-nxtgenui-uiux.identity.stg.covapp.io/CommonReg/secured?cmd=LANDING",
+    "cuid": "J4JIMGA3",
+    "realm": "S-NXTGENUI-UIUX"
 })
 
 
@@ -17,10 +17,10 @@ var nonceRequest = { //set request headers
     method: "POST",
     headers: {
         "Content-Type": "application/vnd.com.covisint.platform.authn.nonce.v1+json",
-        "x-requestor-app": "facebook_login",
-        "x-requestor": "facebook_login",
+        "x-requestor-app": "facebook",
+        "x-requestor": "S-NXTGENUI-UIUX_ADMIN",
         "Accept": "application/vnd.com.covisint.platform.authn.nonce.v1+json",
-        "x-realm": "S-SCLLOGIN-SCL1",
+        "x-realm": "S-NXTGENUI-UIUX",
         "Content-Length": Buffer.byteLength(postDataNonce)
     }
 
@@ -74,18 +74,27 @@ router.get('/auth/facebook/callback',
         res.redirect('/profile');
     });
 router.get('/profile', //jumping to profile page
-    function(req, res,next) {
-        var post_req_nonce = https.request(nonceRequest, function(res) { //post for getting nonce
+    function(req, res) {
+        var url="";
+        var post_req_nonce = https.request(nonceRequest, function(respond) { //post for getting nonce
             console.log('send request');
             var buffer = "";
-            res.setEncoding("utf-8");
-            res.on("data", function(data) {
+            var nonce="";
+            respond.setEncoding("utf-8");
+            respond.on("data", function(data) {
                 buffer += data;
 
             });
-            res.on("end", function() {
+            respond.on("end", function(){
 
-                buffer = JSON.parse(buffer);
+                buffer=JSON.parse(buffer);
+                nonce=buffer.nonce;
+                url="https://s-nxtgenui-uiux.login.stg.covapp.io/validateNonce.do?nonce="+nonce+"&cuid=J4JIMGA3"
+                console.log(url);
+                res.redirect(url);
+                
+
+                /*buffer = JSON.parse(buffer);
                 postDatajwt.nonce = buffer.nonce;
                 jwtRequest["headers"]["Content-Length"] = Buffer.byteLength(JSON.stringify(postDatajwt))
 
@@ -121,14 +130,16 @@ router.get('/profile', //jumping to profile page
                 console.log("send nonce");
                 console.log(postDatajwt);
                 post_req_jwt.write(JSON.stringify(postDatajwt));
-                post_req_jwt.end();
+                post_req_jwt.end();*/
             });
+
+          
+
         })
        
         post_req_nonce.write(postDataNonce);
         post_req_nonce.end();
-
-        res.render('profile', { user: req.user }); //rendering user profile on the page
+        //res.render('profile', { user: req.user});
 
     })
 

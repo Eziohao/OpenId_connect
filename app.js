@@ -47,7 +47,7 @@ app.use('/profile',function(req,res,next){
     res.cookie(cookies);
   }
   else{
-    console.log('cookie does not exists');
+    console.log('cookie does not exist');
   }
    next();
 })
